@@ -3,7 +3,7 @@ name = "frodobuf"
 version = "0.1.0"
 edition = "2018"
 authors = [ "frodobuf" ]
-license = "Apache-2"
+license = "Apache-2.0"
 description = "Frodobuf"
 readme = "README.md"
 
