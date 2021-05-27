@@ -8,7 +8,6 @@ description = "wasmcloud system interface (frodobuf/midl)"
 homepage = "https://github.com/frodobuf"
 repository = "https://github.com/frodobuf/interfaces/system"
 documentation = "https://docs.rs/wasmcloud-system-interface"
-readme = "README.md"
 build = "rust/build.rs"
 
 [lib]
