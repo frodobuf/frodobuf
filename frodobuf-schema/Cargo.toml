@@ -2,6 +2,13 @@
 name = "frodobuf-schema"
 version = "0.1.0"
 edition = "2018"
+authors = [ "stevelr <legolas@frodobuf.org>" ]
+license = "Apache-2.0"
+description = "Schema model for frodobuf"
+homepage = "https://github.com/frodobuf"
+repository = "https://github.com/frodobuf/frodobuf-schema"
+documentation = "https://docs.rs/frodobuf-schema"
+readme = "README.md"
 
 [dependencies]
 serde = { version = "1.0", features=["derive"]}
