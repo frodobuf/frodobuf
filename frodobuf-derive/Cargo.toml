@@ -2,6 +2,13 @@
 name = "frodobuf-derive"
 version = "0.1.0"
 edition = "2018"
+authors = [ "stevelr <legolas@frodobuf.org>" ]
+license = "Apache-2.0"
+description = "derive macros for frodobuf"
+homepage = "https://github.com/frodobuf"
+repository = "https://github.com/frodobuf"
+documentation = "https://docs.rs/frodobuf-derive"
+readme = "README.md"
 
 [lib]
 proc-macro = true
