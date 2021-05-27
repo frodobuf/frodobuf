@@ -16,7 +16,8 @@ use amend_io_error::amend_io_error;
 use linked_hash_map::LinkedHashMap;
 
 mod amend_io_error;
-mod linked_hash_map;
+#[doc(hidden)]
+pub mod linked_hash_map;
 mod model;
 mod parser;
 
@@ -355,7 +356,7 @@ mod tests {
         //println!("A: {:#?}", &parsed);
         assert_eq!(
             parsed.schema.attributes.len(),
-            1usize,
+            2usize, // there's one more for the _source
             "proto options count"
         );
         let opt = parsed.schema.attributes.get(0).unwrap();
