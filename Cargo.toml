@@ -3,7 +3,7 @@ members = [
     "frodobuf",
     "frodobuf-derive",
     "frodobuf-schema",
-    "interfaces/system/rust",
+    "interfaces/system",
     "midl",
     "midl-parser",
 ]

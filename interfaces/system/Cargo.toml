@@ -9,7 +9,10 @@ homepage = "https://github.com/frodobuf"
 repository = "https://github.com/frodobuf/interfaces/system"
 documentation = "https://docs.rs/wasmcloud-system-interface"
 readme = "README.md"
-build = "build.rs"
+build = "rust/build.rs"
+
+[lib]
+path = "rust/src/lib.rs"
 
 [dependencies]
 async-trait = "0.1"
