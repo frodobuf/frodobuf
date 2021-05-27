@@ -1,0 +1,9 @@
+#![feature(associated_type_defaults)]
+#![feature(min_type_alias_impl_trait)]
+#![allow(unused_imports)]
+#![allow(clippy::ptr_arg)]
+pub mod {{ to-snake-case schema.namespace.name }} {
+  include!(concat!(env!("OUT_DIR"), "/{{ to-snake-case schema.namespace.name }}.rs"));
+}
+
+

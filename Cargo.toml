@@ -1,10 +1,12 @@
-[package]
-name = "frodobuf"
-version = "0.1.0"
-edition = "2018"
-authors = [ "frodobuf" ]
-license = "Apache-2.0"
-description = "Frodobuf"
-readme = "README.md"
+[workspace]
+members = [
+    "frodobuf",
+    "frodobuf-derive",
+    "frodobuf-schema",
+    "interfaces/system/rust",
+    "midl",
+    "midl-parser",
+]
 
-[dependencies]
+exclude = [
+]

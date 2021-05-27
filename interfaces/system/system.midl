@@ -1,0 +1,38 @@
+package system;
+
+@doc("Return value from actors and providers for health check status")
+message HealthCheckResponse {
+
+  @doc("A flag that indicates the the actor is healthy")
+  bool healthy;
+
+  @doc("A message containing additional information about the actors health")
+  string message;
+}
+
+@doc("health check request parameter")
+message HealthCheckRequest {
+   // empty
+}
+
+@doc("required interface for actor")
+service Actor {
+    @doc("Perform health check. Called at regular intervals by host")
+    rpc healthRequest(HealthCheckRequest) returns HealthCheckResponse;
+}
+
+@doc("Capability provider interface - required methods")
+@codegen(client = false)   // do not generate client interface
+service Provider {
+
+    @doc("Perform health check. Called at regular intervals by host")
+    rpc healthRequest(HealthCheckRequest) returns HealthCheckResponse;
+
+    @doc("Instruction to bind actor")
+    @doc("- param: string: actor id (public key)")
+    rpc bindActor(string);
+
+    @doc("Instruction to forget actor")
+    @doc("- param: string: actor ID (public key)")
+    rpc removeActor(string);
+}

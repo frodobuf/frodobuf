@@ -1,0 +1,118 @@
+use frodobuf::{
+    client, context, deserialize, serialize, MessageDispatch, RpcError, Transport, Message,
+};
+use async_trait::async_trait;
+use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
+
+{{#each schema.messages}}
+{{ docs this ~}}
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct {{ to-pascal-case ( ident name ) }} {
+    {{#each fields ~}}
+    {{ docs this ~}}
+    {{ field-serde this ~}}
+    pub {{ to-snake-case ( ident name ) }} : {{ to-type typ }},
+    {{/each}}
+}
+{{/each}}
+
+
+{{#each schema.services}}
+{{ docs this ~}}
+/// Service {{ ident name }} trait
+#[async_trait]
+pub trait {{ to-pascal-case ( ident name )}} {
+    {{#each methods}}
+    {{ docs this ~}}
+    async fn {{ to-snake-case name }} (
+        &self,
+        context: &context::Context<'_>,
+        {{#if input_type}} arg: {{ to-arg-ref input_type }} {{/if}}
+    ) -> Result<{{#if output_type}}{{ to-type output_type }}{{else}}(){{/if}}, RpcError>;
+    {{/each}}
+
+    /// 256-bit signature for this trait schema, base64-encoded
+    const SCHEMA_ID: &'static str = "{{ schema_id }}";
+    /// schema of this trait in json, base64-encoded
+    const SCHEMA: &'static str = "{{ schema }}";
+}
+
+/// Service {{ to-pascal-case ( ident name ) }} server implementation
+#[async_trait]
+pub trait {{ to-pascal-case ( ident name ) }}Server: MessageDispatch + {{ to-pascal-case ( ident name ) }} {
+    async fn dispatch(
+        &self,
+        ctx: &context::Context<'_>,
+        message: &Message<'_>,
+    ) -> Result< Message<'static>, RpcError> {
+        match message.method {
+            {{#each methods}}
+            "{{ to-pascal-case name }}" => {
+                {{#if input_type ~}}
+                let value: {{ to-type input_type }} = deserialize(message.arg.as_ref())?;
+                let resp = {{ to-pascal-case ( ident ../name ) }}::{{ to-snake-case name }}(self, ctx, &value).await?;
+                {{else ~}}
+                let resp = {{ to-pascal-case ( ident ../name ) }}::{{ to-snake-case name }}(self, ctx).await?;
+                {{/if ~}}
+                let buf = Cow::Owned(serialize(&resp)?);
+                Ok(Message {
+                    method: "{{ to-pascal-case ( ident ../name ) }}.{{ to-pascal-case name }}",
+                    arg: buf,
+                })
+            }
+            {{/each}}
+            _ => Err(RpcError::MethodNotHandled(format!(
+                "{{ to-pascal-case ( ident name ) }}.{}", message.method
+            ))),
+        }
+    }
+}
+
+/// Service {{ident name}} client implementation
+#[derive(Debug)]
+pub struct {{ to-pascal-case ( ident name ) }}Client< T > {
+    transport: T,
+    config: client::ClientConfig,
+}
+
+impl< T: Transport > {{ to-pascal-case ( ident name ) }}Client< T > {
+    pub fn new(config: client::ClientConfig, transport: T) -> Self {
+        {{ to-pascal-case ( ident name ) }}Client { transport, config }
+    }
+}
+
+#[async_trait]
+impl< T: Transport + std::marker::Sync + std::marker::Send > {{ to-pascal-case ( ident name ) }} for {{ to-pascal-case ( ident name ) }}Client< T > {
+
+    {{#each methods}}
+    #[allow(unused)]
+    async fn {{ to-snake-case ( ident name ) }}(
+        &self,
+        ctx: &context::Context<'_>,
+        {{#if input_type ~}}
+        value: {{to-arg-ref input_type}},
+        {{~/if}}
+    ) -> Result<{{#if output_type}}{{ to-type output_type }}{{else}}(){{/if}}, RpcError> {
+        {{#if input_type ~}}
+        let arg = serialize(value)?;
+        {{else}}
+        let arg = *b"";
+        {{/if}}
+        let resp = self
+            .transport
+            .send(
+                ctx,
+                &self.config,
+                Message {
+                    method: "{{ to-pascal-case name }}",
+                    arg: Cow::Borrowed(&arg),
+                },
+            )
+            .await?;
+        let value = deserialize(resp.arg.as_ref())?;
+        Ok(value)
+    }
+    {{/each}}
+}
+{{/each}}
