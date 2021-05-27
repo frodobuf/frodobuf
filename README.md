@@ -72,7 +72,7 @@ in a temporary build folder (`target/debug/build/.../interface.rs`).
 _Every_ time the `midl` file changes, this file is regenerated,
 ensuring that the source code is always up-to-date with the interface
 definition. Due to a restriction of
-`cargo.io`, dynamically generated source code cannot be put 
+`crates.io`, dynamically generated source code cannot be put 
 into the `src` folder, which is why it's generated in this hard-to-find place.
 If you're curious to see the interface file generated from the library,
 and don't want to hunt for it, 
@@ -129,4 +129,7 @@ an option to view the results of macro expansion in the IDE.
     - all senders and receivers, actor and provider, implement the same trait
   - "registration" is done with macros. No hashtables, just simple string lookup. This reduces the amount of manual code required for handler classes.
   - optional generation of full rust crate with Cargo.toml & build.rs
+
+  The frodobuf crate and the wasmcloud-system-interface crate
+  replace wapc-guest and wasmcloud-actor-core
 
