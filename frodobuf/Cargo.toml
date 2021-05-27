@@ -2,24 +2,31 @@
 name = "frodobuf"
 version = "0.1.0"
 edition = "2018"
+authors = [ "stevelr <legolas@frodobuf.org>" ]
+license = "Apache-2.0"
+description = "Frodobuf midl parser and code generator for wasmcloud"
+homepage = "https://github.com/frodobuf"
+repository = "https://github.com/frodobuf/frodobuf"
+documentation = "https://docs.rs/frodobuf"
+readme = "README.md"
 
 [features]
 default = []
 guest = []
 
 [dependencies]
-lazy_static = "1.4"
-handlebars = "3.5"
-toml = "0.5"
-thiserror = "1.0"
 async-trait = "0.1"
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
 chrono = "0.4"
+frodobuf-derive = "0.1.0"
+frodobuf-schema = "0.1.0"
+handlebars = "3.5"
 Inflector = "0.11"
-frodobuf-schema = { path = "../frodobuf-schema", version = "0.1.0" }
+lazy_static = "1.4"
 rmp-serde = "0.15.4"
-frodobuf-derive = { path = "../frodobuf-derive", version = "0.1.0" }
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+thiserror = "1.0"
+toml = "0.5"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 anyhow = "1.0"
