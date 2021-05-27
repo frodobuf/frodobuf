@@ -2,19 +2,20 @@
 name = "midl-parser"
 version = "0.1.0"
 edition = "2018"
-license = "MIT"
-homepage = ""
+authors = [ "stevelr <legolas@frodobuf.org>" ]
+license = "Apache-2.0"
+description = "MIDL parser for frodobuf"
+homepage = "https://github.com/frodobuf"
+repository = "https://github.com/frodobuf/frodobuf"
+documentation = "https://docs.rs/midl-parser"
+readme = "README.md"
+
 
 [lib]
-doctest = false
-bench = false
 
 [dependencies]
-frodobuf-schema = { path = "../frodobuf-schema", version = "0.1.0" }
+frodobuf-schema = "0.1"
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"]}
 sha2 = "0.9.5"
 base64 = "0.13"
-
-[package.metadata.docs.rs]
-all-features = true
