@@ -120,4 +120,15 @@ pub mod strings {
     pub use inflector::cases::{
         camelcase::to_camel_case, pascalcase::to_pascal_case, snakecase::to_snake_case,
     };
+
+    /// remove leading and trailing quotes, if present
+    pub fn unquote(s: &str) -> &str {
+        match s.strip_prefix('"') {
+            Some(start) => match start.strip_suffix('"') {
+                Some(both) => both,
+                None => s,
+            },
+            None => s,
+        }
+    }
 }

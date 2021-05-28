@@ -4,7 +4,7 @@
 use crate::{
     codegen::{rustfmt, CodegenError},
     render::{ident_to_string, Renderer},
-    strings::to_snake_case,
+    strings::{to_snake_case, unquote},
 };
 use frodobuf_schema::model::{Attribute, Schema};
 use handlebars::{
@@ -26,17 +26,6 @@ fn get<'h>(v: &'h JsonValue, key: &'_ str) -> Result<&'h JsonValue, RenderError>
         .map(|map| map.get(key))
         .unwrap_or_default()
         .ok_or_else(|| RenderError::new(format!("expected object with field {}", key)))
-}
-
-// remove leading and trailing quotes (only if both are present)
-fn unquote(s: &str) -> &str {
-    match s.strip_prefix('"') {
-        Some(start) => match start.strip_suffix('"') {
-            Some(both) => both,
-            None => s,
-        },
-        None => s,
-    }
 }
 
 /// get attributes of model object
