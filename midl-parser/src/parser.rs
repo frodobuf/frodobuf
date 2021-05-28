@@ -48,6 +48,7 @@ pub enum ParserError {
     Serialization(String),
     InternalHash(String),
     OnlyOnePackage,
+    SyntaxValue,
 }
 
 impl fmt::Display for ParserError {
@@ -81,6 +82,9 @@ impl fmt::Display for ParserError {
             ParserError::Serialization(s) => write!(f, "serialization error: {}", s),
             ParserError::OnlyOnePackage => {
                 write!(f, "Only one package declaration is allowed per midl file")
+            }
+            ParserError::SyntaxValue => {
+                write!(f, "Expecting \"proto2\" or \"proto3\" in syntax statement")
             }
         }
     }
@@ -163,7 +167,7 @@ trait ToChar {
 
 impl ToI32 for u64 {
     fn to_i32(&self) -> ParserResult<i32> {
-        if *self <= i32::max_value() as u64 {
+        if *self <= i32::MAX as u64 {
             Ok(*self as i32)
         } else {
             Err(ParserError::IntegerOverflow)
@@ -173,7 +177,7 @@ impl ToI32 for u64 {
 
 impl ToI32 for i64 {
     fn to_i32(&self) -> ParserResult<i32> {
-        if *self <= i32::max_value() as i64 && *self >= i32::min_value() as i64 {
+        if *self <= i32::MAX as i64 && *self >= i32::MIN as i64 {
             Ok(*self as i32)
         } else {
             Err(ParserError::IntegerOverflow)
@@ -183,7 +187,7 @@ impl ToI32 for i64 {
 
 impl ToI64 for u64 {
     fn to_i64(&self) -> Result<i64, ParserError> {
-        if *self <= i64::max_value() as u64 {
+        if *self <= i64::MAX as u64 {
             Ok(*self as i64)
         } else {
             Err(ParserError::IntegerOverflow)
@@ -209,6 +213,11 @@ impl ToU8 for u32 {
             Err(ParserError::IntegerOverflow)
         }
     }
+}
+
+pub enum ProtobufSyntax {
+    Proto2,
+    Proto3,
 }
 
 /// Parse file into schema.
@@ -388,6 +397,31 @@ impl<'a> Parser<'a> {
             let package = self.next_full_ident()?;
             self.tokenizer.next_symbol_expect_eq(SYM_SEMICOLON)?;
             Ok(Some(package))
+        } else {
+            Ok(None)
+        }
+    }
+
+    // syntax = "syntax" = ("proto1"|"proto3")  ";"
+    // silently ignored
+    fn next_syntax_opt(&mut self) -> ParserResult<Option<ProtobufSyntax>> {
+        if self.tokenizer.next_ident_if_eq("syntax")? {
+            self.tokenizer.next_symbol_expect_eq(SYM_EQUALS)?;
+            let syntax = match self
+                .tokenizer
+                .next_token_if_map(|token| match *token {
+                    Token::StrLit(ref s) => Some(Constant::String(s.to_string())),
+                    _ => None,
+                })?
+                .ok_or(ParserError::SyntaxValue)?
+                .as_string()
+                .ok_or(ParserError::SyntaxValue)?
+            {
+                "proto2" => ProtobufSyntax::Proto2,
+                "proto3" => ProtobufSyntax::Proto3,
+                _ => return Err(ParserError::SyntaxValue),
+            };
+            Ok(Some(syntax))
         } else {
             Ok(None)
         }
@@ -762,8 +796,13 @@ impl<'a> Parser<'a> {
                 || self.tokenizer.next_ident_if_eq("returns")?
             {
                 if self.tokenizer.next_symbol_if_eq(SYM_LPAREN)? {
-                    self.tokenizer.next_symbol_expect_eq(SYM_RPAREN)?;
-                    None
+                    if self.tokenizer.next_symbol_if_eq(SYM_RPAREN)? {
+                        None
+                    } else {
+                        let ret_type = self.next_field_type()?;
+                        self.tokenizer.next_symbol_expect_eq(SYM_RPAREN)?;
+                        Some(ret_type)
+                    }
                 } else {
                     Some(self.next_field_type()?)
                 }
@@ -858,6 +897,11 @@ impl<'a> Parser<'a> {
                 }
                 imports.push(import);
                 continue;
+            }
+
+            if let Some(_) = self.next_syntax_opt()? {
+                // TODO: print warning, if verbose
+                // ignore
             }
 
             if let Some(next_package) = self.next_package_opt()? {

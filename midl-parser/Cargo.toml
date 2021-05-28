@@ -1,6 +1,6 @@
 [package]
 name = "midl-parser"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2018"
 authors = [ "stevelr <legolas@frodobuf.org>" ]
 license = "Apache-2.0"
@@ -14,8 +14,11 @@ readme = "README.md"
 [lib]
 
 [dependencies]
-frodobuf-schema = "0.1"
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"]}
 sha2 = "0.9.5"
 base64 = "0.13"
+
+[dependencies.frodobuf-schema]
+version = "0.1"
+#path = "../frodobuf-schema"
