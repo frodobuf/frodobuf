@@ -18,7 +18,7 @@ Note that In messagepack, all message fields are required, even though the proto
 
 Use of `.proto`-aware editors has benefits for syntax highlighting and completion, but passing syntax checks in an IDE does not guarantee the file will be parsable by the MIDL parser.
 
-If there is interest in adding support for any of these protobuf features to the parser, please let us know. It may be possible to enable some additional protobuf features add retain compatibility with wasmcloud messaging.
+If there is interest in adding support for any of these protobuf features to the parser, please let us know. It may be possible to enable some additional protobuf features and retain compatibility with wasmcloud messaging.
 
 
 ## Other simplifications and additions
