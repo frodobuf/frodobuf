@@ -4,10 +4,7 @@ Experimental approach for defining interfaces for
 [wasmcloud](https://wasmcloud.dev) actors and capability providers.
 This project arose out of an interest to experiment with code generation,
 to see if both performance and ergonomics could be improved. 
-Not wanting to invent yet-another-idl, I started with protobuf,
-but after removing some features that were either unneeded or 
-incompatible with the serialization scheme, the result was technically,
-yet-another-idl: a near-subset of protobuf.
+The input syntax is based on a subset of protobuf:
 
 > **Frodobuf** - a little smaller, but it gets the job done
 
@@ -25,7 +22,7 @@ Supported output languages:
 
 - [X] Rust
  
-Sorry that's all for now.
+That's all so far.
 
 ## In this repo
 
@@ -39,13 +36,18 @@ Sorry that's all for now.
 
 ## Getting Started
 
+Install the MIDL cli tool with  `cargo install midl`. That's the only program you need to
+parse midl, generate schemas, and perform code generation for any supported output 
+language.
+
 ### Sample code
 
-There are some sample actors and providers in the frodobuf-examples
-repository.
+There are some sample actors and providers in the 
+[frodobuf-examples](https://github.com/frodobuf/frodobuf-examples) repository. 
+Each of the example interfaces there has both a `.midl` 
+and a `.proto` syntax definition file, which produce equivalent schemas.
 
 ### Creating a new interface library
-
 
 The code generator reads a `midl` file and creates a library that can be shared 
 or linked for building a "client" (caller) or "server" (handler). 
@@ -54,12 +56,15 @@ where `interface` is the interface name. In that folder, run
 
   `midl create -i interface.midl -l rust`
 
-The `-l` parameter specifies the output language. At the moment, 
-only rust is supported. This command creates `rust/Cargo.toml`,
+This command creates `rust/Cargo.toml`,
 `rust/build.rs`, and `rust/src/lib.rs`
 You can edit the package name in Cargo.toml if you wish, and then `cargo build`.
 
-After that, any changes to the midl file will cause the rust sources 
+The `-l` parameter specifies the output language. 
+At the moment, only rust generation is supported, but we'd like.
+_PR contributions for other target languages are welcome!
+
+After the code is generated, any changes to the midl file will cause the rust sources 
 to be regenerated automatically with `cargo build` in that folder 
 or rebuilding any project that depends on the interface library.
 
@@ -96,7 +101,7 @@ an option to view the results of macro expansion in the IDE.
 
 ## How is this different from widl/wapc?
 
-1. The source language (MIDL) is a near-subset of protobuf. See [Changes from protobuf](ChangesFromProtobuf.md) for details.
+1. The source language (MIDL) is based on a subset of protobuf. See [Changes from protobuf](ChangesFromProtobuf.md) for details.
 
 2. Intermediate Schema
 
