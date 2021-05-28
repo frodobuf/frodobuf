@@ -490,6 +490,13 @@ impl Constant {
             Constant::Bytes(_) => "<bytes>".to_string(),
         }
     }
+    /// Returns Some(s) if value is a string constant, otherwise None
+    pub fn as_string(&self) -> Option<&str> {
+        match &self {
+            Constant::String(s) => Some(crate::format::unquote(s.as_str())),
+            _ => None,
+        }
+    }
 }
 
 impl From<String> for Constant {

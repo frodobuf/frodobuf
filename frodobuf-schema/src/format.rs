@@ -19,6 +19,17 @@ pub fn format_float(f: f64) -> String {
     }
 }
 
+/// remove leading and trailing quotes, if present
+pub fn unquote(s: &str) -> &str {
+    match s.strip_prefix('"') {
+        Some(start) => match start.strip_suffix('"') {
+            Some(both) => both,
+            None => s,
+        },
+        None => s,
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -26,5 +37,28 @@ mod test {
     #[test]
     fn test_format_float() {
         assert_eq!("10", format_float(10.0));
+    }
+
+    #[test]
+    fn test_unquote() {
+        assert_eq!(
+            unquote("\"abc\""),
+            "abc",
+            "should remove leading and trailing quotes"
+        );
+
+        assert_eq!(unquote("x"), "x", "no change");
+        assert_eq!(unquote(""), "", "no change for empty string");
+        assert_eq!(unquote("'x'"), "'x'", "no change for single quotes");
+        assert_eq!(
+            unquote("abc\""),
+            "abc\"",
+            "must have both leading and trailing"
+        );
+        assert_eq!(
+            unquote("\"abc"),
+            "\"abc",
+            "must have both leading and trailing"
+        );
     }
 }
